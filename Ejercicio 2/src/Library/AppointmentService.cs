@@ -3,12 +3,12 @@ using System.Text;
 
 namespace Library
 {
-    public class AppointmentService
+    public class AppointmentValidator
     {
-        public static string CreateAppointment(string name, string id, string phoneNumber, DateTime date, string appoinmentPlace, string doctorName)
+        public static bool ValidateAppointment(string name, string id, string phoneNumber, DateTime date, string appoinmentPlace, string doctorName, out string errorMessage)
         {
             StringBuilder stringBuilder = new StringBuilder("Scheduling appointment...\n");
-            Boolean isValid = true;
+            bool isValid = true;
 
             if (string.IsNullOrEmpty(name))
             {
@@ -34,20 +34,36 @@ namespace Library
                 isValid = false;
             }
 
-
             if (string.IsNullOrEmpty(doctorName))
             {
                 stringBuilder.Append("Unable to schedule appointment, 'doctor name' is required\n");
                 isValid = false;
             }
 
-            if (isValid)
+            if (!isValid)
             {
-                stringBuilder.Append("Appoinment scheduled");
+                errorMessage = stringBuilder.ToString();
+                return false;
             }
 
-            return stringBuilder.ToString();
+            errorMessage = null;
+            return true;
         }
+    }
 
+    public class AppointmentCreator
+    {
+        public static string CreateAppointment(string name, string id, string phoneNumber, DateTime date, string appoinmentPlace, string doctorName)
+        {
+            string errorMessage;
+            if (!AppointmentValidator.ValidateAppointment(name, id, phoneNumber, date, appoinmentPlace, doctorName, out errorMessage))
+            {
+                return errorMessage;
+            }
+
+            // Create appointment logic here
+
+            return "Appointment scheduled";
+        }
     }
 }
